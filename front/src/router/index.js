@@ -5,12 +5,10 @@ import AddPost from '../components/AddPost.vue';
 const routes = [
   {
     path: '/',
-    name: 'MainPage',
     component: MainPage
   },
   {
     path: '/add-post',
-    name: 'AddPost',
     component: AddPost,
   }
 ];
