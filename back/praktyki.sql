@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Czas generowania: 12 Kwi 2024, 21:38
+-- Czas generowania: 16 Kwi 2024, 10:27
 -- Wersja serwera: 5.7.24
 -- Wersja PHP: 8.0.1
 
@@ -34,29 +34,14 @@ CREATE TABLE `post` (
   `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
--- Struktura tabeli dla tabeli `user`
+-- Zrzut danych tabeli `post`
 --
 
-CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
-  `firstname` varchar(50) DEFAULT NULL,
-  `lastname` varchar(50) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Zrzut danych tabeli `user`
---
-
-INSERT INTO `user` (`id`, `firstname`, `lastname`, `password`) VALUES
-(1, 'Jan', 'Kowalski', 'haslo123'),
-(2, 'Anna', 'Nowak', 'qwerty321'),
-(3, 'Michał', 'Woźniak', 'bezpiecznehaslo'),
-(4, 'Karolina', 'Jankowska', 'karolka1'),
-(5, 'Piotr', 'Lewandowski', 'pl123');
+INSERT INTO `post` (`id`, `title`, `content`, `user_id`) VALUES
+(2, 'Drugi post', 'Treść drugiego posta', 12),
+(3, 'Ważne ogłoszenie', 'Tutaj znajdziesz ważne ogłoszenie', 5),
+(4, 'Nowy artykuł', 'Tutaj znajdziesz nowy artykuł', 4);
 
 --
 -- Indeksy dla zrzutów tabel
@@ -70,12 +55,6 @@ ALTER TABLE `post`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indeksy dla tabeli `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
-
---
 -- AUTO_INCREMENT dla zrzuconych tabel
 --
 
@@ -83,13 +62,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT dla tabeli `post`
 --
 ALTER TABLE `post`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT dla tabeli `user`
---
-ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- Ograniczenia dla zrzutów tabel

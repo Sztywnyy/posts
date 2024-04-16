@@ -2,12 +2,13 @@
   <div>
     <h2>Posty</h2>
     <div class="btn">
-      <button @click="goToAddPostPage">Dodaj nowy post</button>
+      <button @click="goToAddPostPage">Dodaj post</button>
     </div>
     <div v-if="posts.length">
       <div class="post-container" v-for="post in posts" :key="post.id">
         <h3>{{ post.title }}</h3>
         <p>{{ post.content }}</p>
+        <p class="user">{{ post.firstname }} {{ post.lastname }}</p>
         <button @click="deletePost(post.id)">Usuń post</button>
       </div>
     </div>
@@ -19,7 +20,7 @@
         fill="currentColor"
         class="bi bi-question-octagon"
         viewBox="0 0 16 16"
-        style="margin-right: 8px;"
+        style="margin-right: 8px"
       >
         <path
           d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1z"
@@ -46,6 +47,9 @@ export default {
   },
   mounted() {
     this.fetchPosts();
+    setTimeout(()=>{
+      console.log(this.posts, this.newPost)
+    }, 5000)
   },
   methods: {
     fetchPosts() {
@@ -59,6 +63,10 @@ export default {
           return response.json();
         })
         .then((data) => {
+          if(!data.posts) {
+            alert("Nie znaleziono postow!")
+          }
+          else
           this.posts = data.posts;
         })
         .catch((error) => {
@@ -84,6 +92,7 @@ export default {
     },
   },
 };
+
 </script>
 
 <style scoped>
@@ -109,6 +118,7 @@ h2 {
 
 .post-container {
   max-width: 600px;
+  position: relative;
   margin: 20px auto;
   padding: 20px;
   background-color: #f0f4f8;
@@ -117,6 +127,7 @@ h2 {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
     rgba(0, 0, 0, 0.22) 0px 10px 10px;
+  overflow: auto;
 }
 
 .post-container button {
@@ -128,6 +139,14 @@ h2 {
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.3s ease;
+}
+
+.user {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #555;
+  font-size: 0.85em;
 }
 
 p.blad {
