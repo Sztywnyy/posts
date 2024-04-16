@@ -47,7 +47,7 @@ export default {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(this.user),
+        body: JSON.stringify({ username: this.user.username, password: this.user.password }),
       })
       .then(response => response.json())
       .then(data => {
@@ -68,7 +68,38 @@ export default {
       });
     },
     register() {
-      // Metoda rejestracji (jeśli potrzebna)
+      const postUser = {
+        username: this.user.username,
+        password: this.user.password,
+        firstname: this.user.firstname,
+        lastname: this.user.lastname,
+        action: "register"
+      };
+
+      fetch('http://localhost/skrypty/verifyUser.php?action=register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postUser),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert('Użytkownik dodany pomyślnie');
+          this.user.firstname = '';
+          this.user.lastname = '';
+          this.isAuthenticated = true;
+          localStorage.setItem('user_id', data.user_id);
+          this.needRegistration = false;
+        } else {
+          alert("Błąd: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Błąd sieciowy.");
+      });
     },
     handlePost() {
       const postData = {
