@@ -32,6 +32,9 @@
       Brak postów do wyświetlenia.
     </p>
   </div>
+  <footer>
+    Autor strony i API: Dawid Kowalczyk
+  </footer>
 </template>
 
 <script>
@@ -97,6 +100,13 @@ export default {
 
 body {
   background-color: #e1e1e1 !important;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+  color: #c1c1c1;
 }
 
 h2 {

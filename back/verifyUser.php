@@ -45,27 +45,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(array("message" => "Niekompletne dane."));
         }
     } else {
-        $username = $data['username'];
-        $password = $data['password'];
+        if (isset($data['username'], $data['password'])) {
+            $username = $data['username'];
+            $password = $data['password'];
 
-        $stmt = $conn->prepare("SELECT id, password FROM user WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+            $stmt = $conn->prepare("SELECT id, password FROM user WHERE username = ?");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if ($password === $user['password']) {
-                echo json_encode(['message' => 'Zalogowany', 'user_id' => $user['id']]);
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                if ($password === $user['password']) {
+                    echo json_encode(['message' => 'Zalogowany', 'user_id' => $user['id']]);
+                } else {
+                    echo json_encode(['error' => 'Niepoprawne hasło']);
+                }
             } else {
-                echo json_encode(['error' => 'Niepoprawne hasło']);
+                echo json_encode(['need_registration' => true]);
             }
+            $stmt->close();
         } else {
-            echo json_encode(['need_registration' => true]);
+            http_response_code(400);
+            echo json_encode(array("message" => "Niekompletne dane."));
         }
-        $stmt->close();
+    
     }
 
-    echo json_encode(array("error" => 'Wystąpił niespodziewany błąd!'));
+    // echo json_encode(array("error" => 'Wystąpił niespodziewany błąd!'));
 }
 $conn->close();
