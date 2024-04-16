@@ -36,7 +36,7 @@ export default {
         title: "",
         content: ""
       },
-      isAuthenticated: this.checkCookie('username'),
+      isAuthenticated: this.checkAuthentication(),
       needRegistration: false
     };
   },
@@ -48,15 +48,12 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(this.user),
-        credentials: "same-origin",
       })
       .then(response => response.json())
       .then(data => {
         if (data.message) {
           this.isAuthenticated = true;
-          let date = new Date();
-          date.setDate(date.getDate()+7);
-          document.cookie = `user_id=${data.user_id}; expires=${date};`; 
+          localStorage.setItem('user_id', data.user_id);
           alert('Zalogowano pomyślnie.');
         } else if (data.need_registration) {
           this.needRegistration = true;
@@ -71,11 +68,13 @@ export default {
       });
     },
     register() {
+      // Metoda rejestracji (jeśli potrzebna)
     },
     handlePost() {
       const postData = {
         title: this.newPost.title,
-        content: this.newPost.content
+        content: this.newPost.content,
+        user_id: localStorage.getItem('user_id'),
       };
 
       fetch('http://localhost/skrypty/fetchData.php', {
@@ -84,7 +83,6 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(postData),
-        credentials: "same-origin",
       })
       .then(response => response.json())
       .then(data => {
@@ -92,6 +90,7 @@ export default {
           alert('Post dodany pomyślnie');
           this.newPost.title = '';
           this.newPost.content = '';
+          this.$router.push('/');
         } else {
           alert("Błąd: " + data.error);
         }
@@ -101,14 +100,12 @@ export default {
         alert("Błąd sieciowy.");
       });
     },
-    checkCookie(name) {
-      let matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\\[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-      return matches ? decodeURIComponent(matches[1]) : undefined;
+    checkAuthentication() {
+      return localStorage.getItem('user_id') !== null; // Sprawdzamy Local Storage
     }
   }
 };
 </script>
-
 
 <style scoped>
 div {

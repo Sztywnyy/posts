@@ -33,13 +33,13 @@ class Database {
             echo json_encode(['error' => 'No data provided']);
             exit;
         } else {
-            if(!isset($_COOKIE['user_id'])) {
+            if(!isset($data['user_id'])) {
                 echo json_encode(['error' => 'Not logged!']);
                 exit;
             }
             try {
                 $stmt = $this->getConnection()->prepare("INSERT INTO post (title, content, user_id) VALUES (?, ?, ?)");
-                $stmt->bind_param("ssi", $data['title'], $data['content'], $_COOKIE['user_id']);
+                $stmt->bind_param("ssi", $data['title'], $data['content'], $data['user_id']);
                 $stmt->execute();
     
                 if ($stmt->affected_rows > 0) {

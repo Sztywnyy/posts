@@ -23,8 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         if ($password === $user['password']) {
-            setcookie("user_id", $user['id'], time() + (86400 * 7), "/");
-            echo json_encode(['message' => 'Zalogowany', 'user_id' => $user['id'], 'cookievalue' => $_COOKIE['user_id']]);
+            echo json_encode(['message' => 'Zalogowany', 'user_id' => $user['id']]);
         } else {
             echo json_encode(['error' => 'Niepoprawne hasło']);
         }
