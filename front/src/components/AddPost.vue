@@ -36,7 +36,7 @@ export default {
         title: "",
         content: ""
       },
-      isAuthenticated: this.checkCookie('username'),
+      isAuthenticated: this.checkAuthentication(),
       needRegistration: false
     };
   },
@@ -47,16 +47,13 @@ export default {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(this.user),
-        credentials: "same-origin",
+        body: JSON.stringify({ username: this.user.username, password: this.user.password }),
       })
       .then(response => response.json())
       .then(data => {
         if (data.message) {
           this.isAuthenticated = true;
-          let date = new Date();
-          date.setDate(date.getDate()+7);
-          document.cookie = `user_id=${data.user_id}; expires=${date};`; 
+          localStorage.setItem('user_id', data.user_id);
           alert('Zalogowano pomyślnie.');
         } else if (data.need_registration) {
           this.needRegistration = true;
@@ -71,27 +68,30 @@ export default {
       });
     },
     register() {
-    },
-    handlePost() {
-      const postData = {
-        title: this.newPost.title,
-        content: this.newPost.content
+      const postUser = {
+        username: this.user.username,
+        password: this.user.password,
+        firstname: this.user.firstname,
+        lastname: this.user.lastname,
+        action: "register"
       };
 
-      fetch('http://localhost/skrypty/fetchData.php', {
+      fetch('http://localhost/skrypty/verifyUser.php?action=register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(postData),
-        credentials: "same-origin",
+        body: JSON.stringify(postUser),
       })
       .then(response => response.json())
       .then(data => {
         if (data.message) {
-          alert('Post dodany pomyślnie');
-          this.newPost.title = '';
-          this.newPost.content = '';
+          alert('Użytkownik dodany pomyślnie');
+          this.user.firstname = '';
+          this.user.lastname = '';
+          this.isAuthenticated = true;
+          localStorage.setItem('user_id', data.user_id);
+          this.needRegistration = false;
         } else {
           alert("Błąd: " + data.error);
         }
@@ -101,14 +101,42 @@ export default {
         alert("Błąd sieciowy.");
       });
     },
-    checkCookie(name) {
-      let matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\\[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-      return matches ? decodeURIComponent(matches[1]) : undefined;
+    handlePost() {
+      const postData = {
+        title: this.newPost.title,
+        content: this.newPost.content,
+        user_id: localStorage.getItem('user_id'),
+      };
+
+      fetch('http://localhost/skrypty/fetchData.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert('Post dodany pomyślnie');
+          this.newPost.title = '';
+          this.newPost.content = '';
+          this.$router.push('/');
+        } else {
+          alert("Błąd: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Błąd sieciowy.");
+      });
+    },
+    checkAuthentication() {
+      return localStorage.getItem('user_id') !== null; // Sprawdzamy Local Storage
     }
   }
 };
 </script>
-
 
 <style scoped>
 div {

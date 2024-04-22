@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Czas generowania: 16 Kwi 2024, 10:27
+-- Czas generowania: 16 Kwi 2024, 20:15
 -- Wersja serwera: 5.7.24
 -- Wersja PHP: 8.0.1
 
@@ -24,55 +24,45 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `post`
+-- Struktura tabeli dla tabeli `user`
 --
 
-CREATE TABLE `post` (
+CREATE TABLE `user` (
   `id` int(11) NOT NULL,
-  `title` varchar(100) DEFAULT NULL,
-  `content` text,
-  `user_id` int(11) DEFAULT NULL
+  `username` text CHARACTER SET utf8 COLLATE utf8_polish_ci NOT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `firstname` text NOT NULL,
+  `lastname` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Zrzut danych tabeli `post`
+-- Zrzut danych tabeli `user`
 --
 
-INSERT INTO `post` (`id`, `title`, `content`, `user_id`) VALUES
-(2, 'Drugi post', 'Treść drugiego posta', 12),
-(3, 'Ważne ogłoszenie', 'Tutaj znajdziesz ważne ogłoszenie', 5),
-(4, 'Nowy artykuł', 'Tutaj znajdziesz nowy artykuł', 4);
+INSERT INTO `user` (`id`, `username`, `password`, `firstname`, `lastname`) VALUES
+(1, 'user1', 'haslo123', 'Dawid', 'Podsiadło'),
+(2, 'user2', 'qwerty321', 'Mateusz', 'Wokulski'),
+(3, 'user3', 'bezpiecznehaslo', 'Paweł', 'Bratek');
 
 --
 -- Indeksy dla zrzutów tabel
 --
 
 --
--- Indeksy dla tabeli `post`
+-- Indeksy dla tabeli `user`
 --
-ALTER TABLE `post`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT dla zrzuconych tabel
 --
 
 --
--- AUTO_INCREMENT dla tabeli `post`
+-- AUTO_INCREMENT dla tabeli `user`
 --
-ALTER TABLE `post`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
-
---
--- Ograniczenia dla zrzutów tabel
---
-
---
--- Ograniczenia dla tabeli `post`
---
-ALTER TABLE `post`
-  ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Posty</h2>
-    <div class="btn">
+    <div class="guzik">
       <button @click="goToAddPostPage">Dodaj post</button>
     </div>
     <div v-if="posts.length">
@@ -32,6 +32,9 @@
       Brak postów do wyświetlenia.
     </p>
   </div>
+  <footer>
+    Autor strony i API: Dawid Kowalczyk
+  </footer>
 </template>
 
 <script>
@@ -43,56 +46,51 @@ export default {
         title: "",
         content: "",
       },
+      isAuthenticated: this.checkAuthentication(), // Zmieniamy na sprawdzenie Local Storage
     };
-  },
-  mounted() {
-    this.fetchPosts();
-    setTimeout(()=>{
-      console.log(this.posts, this.newPost)
-    }, 5000)
   },
   methods: {
     fetchPosts() {
       fetch("http://localhost/skrypty/fetchData.php")
         .then((response) => {
           if (!response.ok) {
-            throw new Error(
-              "Odpowiedz sieci nie jest poprawna" + response.statusText
-            );
+            throw new Error("Odpowiedź sieci nie jest poprawna" + response.statusText);
           }
           return response.json();
         })
         .then((data) => {
           if(!data.posts) {
-            alert("Nie znaleziono postow!")
+            alert("Nie znaleziono postów!");
+          } else {
+            this.posts = data.posts;
           }
-          else
-          this.posts = data.posts;
         })
         .catch((error) => {
-          console.error("Wystapil blad podczas pobierania postow: ", error);
+          console.error("Wystąpił błąd podczas pobierania postów: ", error);
         });
     },
-
     deletePost(id) {
       fetch(`http://localhost/skrypty/fetchData.php?id=${id}`, {
         method: "DELETE",
       })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          this.fetchPosts();
-        })
-        .catch((error) => console.error("Error:", error));
-      console.log("Attempting to delete post with ID:", id);
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        this.fetchPosts();
+      })
+      .catch((error) => console.error("Error:", error));
     },
-
     goToAddPostPage() {
       this.$router.push("/add-post");
     },
+    checkAuthentication() {
+      return localStorage.getItem('user_id') !== null; // Używamy Local Storage do sprawdzenia autoryzacji
+    }
   },
+  mounted() {
+    this.fetchPosts();
+  }
 };
-
 </script>
 
 <style scoped>
@@ -102,6 +100,13 @@ export default {
 
 body {
   background-color: #e1e1e1 !important;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+  color: #c1c1c1;
 }
 
 h2 {
@@ -209,13 +214,13 @@ p.blad {
   background-color: #4a54e1;
 }
 
-.btn {
+.guzik {
   margin: 20px auto;
   display: flex;
   justify-content: center;
 }
 
-.btn button {
+.guzik button {
   padding: 8px 16px;
   background-color: #5c67f2;
   color: white;
@@ -225,7 +230,7 @@ p.blad {
   transition: background-color 0.3s;
 }
 
-.btn button:hover {
+.guzik button:hover {
   background-color: #4a54e1;
 }
 
