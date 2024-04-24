@@ -225,6 +225,7 @@ p.blad {
 }
 
 .guzik button {
+  margin: 5px;
   padding: 8px 16px;
   background-color: #5c67f2;
   color: white;
