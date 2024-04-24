@@ -13,7 +13,7 @@
     </div>
 
     <div v-else class="posty">
-      <h2>Twoje posty</h2>
+      <h2>Posty</h2>
       <div v-if="posts.length">
       <div class="post-container" v-for="post in posts" :key="post.id">
         <h3>{{ post.title }}</h3>

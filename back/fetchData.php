@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     };
     $user = $_GET['user'];
     $conn = $database->getConnection();
-    $sql = "SELECT p.id, p.title, p.content, u.username, u.firstname, u.lastname FROM post p LEFT JOIN user u ON p.user_id = u.id WHERE p.user_id =".$user;
+    $sql = "SELECT p.id, p.title, p.content, u.username, u.firstname, u.lastname  FROM post p  LEFT JOIN user u ON p.user_id = u.id LEFT JOIN friends f ON p.user_id = f.friend_id OR p.user_id = f.user_id WHERE f.user_id = ".$user." OR p.user_id =".$user;
     $result = $conn->query($sql);
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     echo json_encode(['posts' => $posts]);
