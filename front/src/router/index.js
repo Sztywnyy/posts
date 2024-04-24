@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MainPage from '../components/MainPage.vue';
 import AddPost from '../components/AddPost.vue';
+import MinePosts from '../components/MinePosts.vue';
 
 const routes = [
   {
@@ -10,6 +11,10 @@ const routes = [
   {
     path: '/add-post',
     component: AddPost,
+  },
+  {
+    path: '/mine-posts',
+    component: MinePosts,
   }
 ];
 
