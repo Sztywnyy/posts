@@ -3,6 +3,7 @@
     <h2>Posty</h2>
     <div class="guzik">
       <button @click="goToAddPostPage">Dodaj post</button>
+      <button @click="goToMinePosts">Zobacz swoje posty</button>
     </div>
     <div v-if="posts.length">
       <div class="post-container" v-for="post in posts" :key="post.id">
@@ -82,6 +83,9 @@ export default {
     },
     goToAddPostPage() {
       this.$router.push("/add-post");
+    },
+    goToMinePosts() {
+      this.$router.push("/mine-posts");
     },
     checkAuthentication() {
       return localStorage.getItem('user_id') !== null; // Używamy Local Storage do sprawdzenia autoryzacji
@@ -221,6 +225,7 @@ p.blad {
 }
 
 .guzik button {
+  margin: 5px;
   padding: 8px 16px;
   background-color: #5c67f2;
   color: white;
