@@ -1,5 +1,21 @@
 <template>
   <div>
+    <div class="sidebar">
+      <div class="dodawanie">
+        <h3>Zalogowani użytkownicy</h3>
+        <button @click="this.showform = !this.showform">{{ this.showform ? "Ukryj" : "Pokaż" }}</button>
+        <template v-if="this.showform">
+          <input type="text" v-model="this.firstname" placeholder="Imię" />
+          <input type="text" v-model="this.lastname" placeholder="Nazwisko" />
+          <button @click="addFriend()">Dodaj znajomego</button>
+        </template>
+        <div class="znajomi">
+          <div class="znajomy" v-for="user in friends" :key="user.id">
+            <span>{{ user.firstname }} {{ user.lastname }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <h2>Posty</h2>
     <div class="guzik">
       <button @click="goToAddPostPage">Dodaj post</button>
@@ -33,9 +49,7 @@
       Brak postów do wyświetlenia.
     </p>
   </div>
-  <footer>
-    Autor strony i API: Dawid Kowalczyk
-  </footer>
+  <footer>Autor strony i API: Dawid Kowalczyk</footer>
 </template>
 
 <script>
@@ -43,11 +57,15 @@ export default {
   data() {
     return {
       posts: [],
+      friends: [],
       newPost: {
         title: "",
         content: "",
       },
-      isAuthenticated: this.checkAuthentication(), // Zmieniamy na sprawdzenie Local Storage
+      firstname: "",
+      lastname: "",
+      isAuthenticated: this.checkAuthentication(),
+      showform: false
     };
   },
   methods: {
@@ -55,12 +73,14 @@ export default {
       fetch("http://localhost/skrypty/fetchData.php")
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Odpowiedź sieci nie jest poprawna" + response.statusText);
+            throw new Error(
+              "Odpowiedź sieci nie jest poprawna" + response.statusText
+            );
           }
           return response.json();
         })
         .then((data) => {
-          if(!data.posts) {
+          if (!data.posts) {
             alert("Nie znaleziono postów!");
           } else {
             this.posts = data.posts;
@@ -74,12 +94,61 @@ export default {
       fetch(`http://localhost/skrypty/fetchData.php?id=${id}`, {
         method: "DELETE",
       })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        this.fetchPosts();
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          this.fetchPosts();
+        })
+        .catch((error) => console.error("Error:", error));
+    },
+    fetchFriends() {
+      fetch(
+        `http://localhost/skrypty/Friends.php?user=${localStorage.getItem(
+          "user_id"
+        )}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          this.friends = data.friends;
+        })
+        .catch((error) => console.error("Error:", error));
+    },
+    addFriend() {
+      const postData = {
+        firstname: this.firstname,
+        lastname: this.lastname,
+        user: localStorage.getItem("user_id"),
+      };
+
+      fetch("http://localhost/skrypty/Friends.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
       })
-      .catch((error) => console.error("Error:", error));
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            alert("Znajomy dodany pomyślnie");
+            this.friends.push({
+              firstname: this.firstname,
+              lastname: this.lastname,
+            });
+            this.firstname = "";
+            this.lastname = "";
+          } else {
+            alert("Błąd: " + data.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Błąd sieciowy.");
+        });
     },
     goToAddPostPage() {
       this.$router.push("/add-post");
@@ -88,12 +157,13 @@ export default {
       this.$router.push("/mine-posts");
     },
     checkAuthentication() {
-      return localStorage.getItem('user_id') !== null; // Używamy Local Storage do sprawdzenia autoryzacji
-    }
+      return localStorage.getItem("user_id") !== null; // Używamy Local Storage do sprawdzenia autoryzacji
+    },
   },
   mounted() {
     this.fetchPosts();
-  }
+    this.fetchFriends();
+  },
 };
 </script>
 
@@ -104,6 +174,66 @@ export default {
 
 body {
   background-color: #e1e1e1 !important;
+}
+
+.dodawanie {
+  max-width: 300px;
+  position: absolute;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f0f4f8;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
+    rgba(0, 0, 0, 0.22) 0px 10px 10px;
+  overflow: auto;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+}
+
+.dodawanie button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.dodawanie button:hover {
+  background-color: #45a049;
+}
+
+.znajomi {
+  display: flex;
+  grid-gap: 35px;
+  flex-direction: column;
+  margin-top: 35px;
+  margin-bottom: 15px;
+}
+.znajomy span {
+  max-width: 600px;
+  position: relative;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: #eaeaea;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
+    rgba(0, 0, 0, 0.22) 0px 10px 10px;
+  overflow: auto;
 }
 
 footer {
